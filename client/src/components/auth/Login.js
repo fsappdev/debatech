@@ -12,8 +12,8 @@ class Login extends Component {
    constructor() {
       super();
       this.state = {
-         email: ' ',
-         password: ' ',
+         email: '',
+         password: '',
          errors: {}
       };
       /* this.onChange = this.onChange.bind; */

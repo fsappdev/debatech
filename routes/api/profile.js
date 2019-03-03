@@ -11,6 +11,8 @@ const validateEducationInput = require('../../validation/education');
 const Profile = require('../../models/Profile');
 //cargar el modelo de user
 const User = require('../../models/User');
+//request
+const request = require('request');
 
 
 //@route GET api/profile/test
@@ -29,8 +31,8 @@ router.get('/', passport.authenticate('jwt', {
     const errors = {};
 
     Profile.findOne({
-            user: req.user.id
-        })
+        user: req.user.id
+    })
         .then(profile => {
             if (!profile) {
                 errors.noprofile = 'NO Existe un perfil para ese usuario';
@@ -40,6 +42,32 @@ router.get('/', passport.authenticate('jwt', {
         })
         .catch(err => res.status(404).json(err));
 });
+
+// @route       GET api/profile/github/:username/:count/:sort
+// @desc        Get github data from github api
+// @access      Public
+router.get("/github/:username/:count/:sort", (req, res) => {
+    username = req.params.username;
+    clientId = "4431a4ae1cc62c61a76d";
+    clientSecret = "8b18c8a8f80ce07a8856a90c8d22989fa84ceb83";
+    count = req.params.count;
+    sort = req.params.sort;
+    const options = {
+        url: `https://api.github.com/users/${username}/repos?per_page=${count}&sort=${sort}&client_id=${clientId}&client_secret=${clientSecret}`,
+        headers: {
+            "User-Agent": "request"
+        }
+    };
+    function callback(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            const info = JSON.parse(body);
+            res.json(info);
+        }
+    }
+    request(options, callback);
+
+});
+
 
 //@route api/profile/all
 //@desc get all the profiles
@@ -63,13 +91,13 @@ router.get('/all', (req, res) => {
 ////////////////////////////////////////////
 
 //@route GET api/profile/handle/:handle
-//@desc ger profile by handle
+//@desc get profile by handle
 //@access Public
 router.get('/handle/:handle', (req, res) => {
     const errors = {};
     Profile.findOne({
-            handle: req.params.handle
-        })
+        handle: req.params.handle
+    })
         .populate('user', ['name', 'avatar'])
         .then(profile => {
             if (!profile) {
@@ -87,8 +115,8 @@ router.get('/handle/:handle', (req, res) => {
 router.get('/user/:user_id', (req, res) => {
     const errors = {};
     Profile.findOne({
-            user: req.params.user_id
-        })
+        user: req.params.user_id
+    })
         .populate('user', ['name', 'avatar'])
         .then(profile => {
             if (!profile) {
@@ -107,8 +135,8 @@ router.get('/user/:user_id', (req, res) => {
 //@acceso private
 
 router.post('/', passport.authenticate('jwt', {
-        session: false
-    }),
+    session: false
+}),
     (req, res) => {
         const {
             errors,
@@ -144,14 +172,14 @@ router.post('/', passport.authenticate('jwt', {
         if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
 
         Profile.findOne({
-                user: req.user.id
-            })
+            user: req.user.id
+        })
             .then(profile => {
                 if (profile) {
                     //actualizar
                     Profile.findOneAndUpdate({
-                            user: req.user.id
-                        }, {
+                        user: req.user.id
+                    }, {
                             $set: profileFields
                         }, {
                             new: true
@@ -191,8 +219,8 @@ router.post('/experience', passport.authenticate('jwt', {
         return res.status(400).json(errors);
     }
     Profile.findOne({
-            user: req.user.id
-        })
+        user: req.user.id
+    })
         .then(profile => {
             const newExp = {
                 title: req.body.title,
@@ -227,8 +255,8 @@ router.post('/education', passport.authenticate('jwt', {
         return res.status(400).json(errors);
     }
     Profile.findOne({
-            user: req.user.id
-        })
+        user: req.user.id
+    })
         .then(profile => {
             const newEdu = {
                 school: req.body.school,
@@ -255,8 +283,8 @@ router.delete('/experience/:exp_id', passport.authenticate('jwt', {
 }), (req, res) => {
 
     Profile.findOne({
-            user: req.user.id
-        })
+        user: req.user.id
+    })
         .then(profile => {
             //ge remove index
             const removeIndex = profile.experience
@@ -279,8 +307,8 @@ router.delete('/education/:edu_id', passport.authenticate('jwt', {
 }), (req, res) => {
 
     Profile.findOne({
-            user: req.user.id
-        })
+        user: req.user.id
+    })
         .then(profile => {
             //ge remove index
             const removeIndex = profile.education
@@ -302,12 +330,12 @@ router.delete('/', passport.authenticate('jwt', {
     session: false
 }), (req, res) => {
     Profile.findOneAndRemove({
-            user: req.user.id
-        })
+        user: req.user.id
+    })
         .then(() => {
             User.findOneAndRemove({
-                    _id: req.user.id
-                })
+                _id: req.user.id
+            })
                 .then(() => res.json({
                     success: true
                 }));

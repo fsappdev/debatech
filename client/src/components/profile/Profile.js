@@ -9,31 +9,29 @@ import ProfileCreds from './ProfileCreds';
 import ProfileGithub from './ProfileGithub';
 import Spinner from '../common/Spinner';
 
-
 class Profile extends Component {
+   //_isMounted = false;
 
    componentWillReceiveProps(nextProps) {
       if (nextProps.publicprofile.publicprofile === null) {
          this.props.history.push('/not-found');
+      } else {
+         this.props.getProfileByHandle(this.props.match.params.handle);
       }
    }
 
+
    componentDidMount() {
-      let usuario = this.props.match.params.handle;
-      console.log(usuario);
       this.props.getProfileByHandle(this.props.match.params.handle);
    }
 
+
    render() {
-      /* console.log(this.props.match.params.handle); */
-      //let usuario = this.props.match.params.handle;
-      //console.log(usuario);
 
       const { publicprofile, loading } = this.props.publicprofile;
+
       let profileContent;
-      console.log(this.props);
-      console.log(this.props.match);
-      console.log(publicprofile);
+
 
       if (publicprofile === null || loading) {
          profileContent = <Spinner />
@@ -51,7 +49,10 @@ class Profile extends Component {
                <ProfileHeader publicprofile={publicprofile} />
                <ProfileAbout publicprofile={publicprofile} />
                <ProfileCreds education={publicprofile.education} experience={publicprofile.experience} />
-               {publicprofile.githubusername ? (<ProfileGithub username={publicprofile.githubusername} />) : <p>Aún no ha creado repositorios</p>}
+
+               <ProfileGithub username={publicprofile.githubusername} />
+               {/* publicprofile.githubusername ? (<ProfileGithub username={publicprofile.githubusername} />) : null */}
+
             </div>
          )
       }
@@ -62,6 +63,7 @@ class Profile extends Component {
                <div className="row">
                   <div className="col-md-12">
                      {profileContent}
+
                   </div>
                </div>
             </div>

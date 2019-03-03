@@ -12,10 +12,10 @@ class Register extends Component {
    constructor() {
       super();
       this.state = {
-         name: ' ',
-         email: ' ',
-         password: ' ',
-         password2: ' ',
+         name: '',
+         email: '',
+         password: '',
+         password2: '',
          errors: {}
       };
       /* this.onChange = this.onChange.bind; */

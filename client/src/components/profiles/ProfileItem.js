@@ -26,8 +26,7 @@ class ProfileItem extends Component {
                   <p>
                      {isEmpty(profile.location) ? null : (<span>en {profile.location}</span>)}
                   </p>
-                  <Link to={`/profile/${profile.handle}`} className="btn btn-info">Ver Perfil
-                     </Link>
+                  <Link to={`/profile/${profile.handle}`} className="btn btn-info">Ver Perfil</Link>
                </div>
 
                <div className="col-md-4 d-none d-md-block">

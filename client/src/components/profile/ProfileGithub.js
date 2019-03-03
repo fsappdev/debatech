@@ -1,77 +1,97 @@
 import React, { Component } from 'react'
-import { Link } from 'react-router-dom';
-import isEmpty from '../../validation/is-empty';
 import PropTypes from 'prop-types';
 
 class ProfileGithub extends Component {
+
    constructor(props) {
       super(props);
       this.state = {
-         clientId: '4431a4ae1cc62c61a76d',
-         clientSecret: '8b18c8a8f80ce07a8856a90c8d22989fa84ceb83',
          count: 5,
          sort: 'created: asc',
-         repos: []
-      }
+         username: this.props,
+         repos: [],
+      };
    }
 
-   componentDidMount() {
+   //traemos la data de GH con fetch
+   getFetch = () => {
       const { username } = this.props;
-      //console.log(username);
-      const { count, sort, clientId, clientSecret } = this.state;
-      fetch(`https://api.github.com/users/${username}/repos?per_page=${count}&sort=${sort}&client_id=${clientId}&client_secret=${clientSecret}`)
+      const { count, sort } = this.state;
+
+      fetch(`/api/profile/github/${username}/${count}/${sort}`)
          .then(res => res.json())
          .then(data => {
-            //this.setState({ repos: data })
-            if (this.refs.myRef) {
-               this.setState({ repos: data });
-            }
+            //if (this.refs.myRef && this._isMounted) {
+            this.setState({ repos: data });
+            console.log(this.state.repos);
+            //}
          })
-         .catch(err => console.log(err))
+         .catch(err => console.log(err));
+      console.log('didmount');
+      console.log(this.state.repos);
    }
 
    render() {
-      const { repos } = this.state;
-      const repoItems = repos.map(repo => (
-         <div key={repo.id} className="card card-body mb-2">
-            <div className="row">
-               <div className="col-md-6">
-                  <h4>
-                     <Link to={repo.html_url} className="text-info" target="_blank">
-                        {repo.name}
-                     </Link>
-                  </h4>
-                  <p>{repo.description}</p>
-               </div>
-               <div className="col-md-6">
-                  <span className="badge badge-info mr-1">
-                     Stars: {repo.stargazers_count}
-                  </span>
-                  <span className="badge badge-info mr-1">
-                     Watchers: {repo.watchers_count}
-                  </span>
-                  <span className="badge badge-info mr-1">
-                     Forks: {repo.forks_count}
-                  </span>
-               </div>
-            </div>
-         </div>
-      ));
+      const { username } = this.props;
 
-      return (
-         <div ref="myRef">
-            <hr />
-            <span className="lead">{isEmpty(repoItems) ? (<p>Aun no tiene repositorios de Github</p>) : (<p className="mb-4">Ultimos repositorios de Github</p>)}
-            </span>
-            {/* <h3 className="mb-4">ultimos repositorios de Github</h3> */}
-            {repoItems}
+      if (username) {
+         const { repos } = this.state;
+
+         return (
+            <div /* ref="myRef" */ >
+               <br />
+
+               <h3 className="text-left text-info">
+                  <i className="fab fa-github fa-1x"></i>
+                  Github:
+               </h3>
+               <p>nombre de usuario: {username}</p>
+
+               <button className="btn btn-light mb-3 " onClick={this.getFetch}>Click para ver los repositorios</button>
+               {
+                  repos.map(repo => (
+                     <div key={repo.id} className="card card-body mb-2">
+                        <div className="row">
+                           <div className="col-md-6">
+                              <h4>
+                                 <a href={repo.html_url} className="text-info" rel="noopener noreferrer" target="_blank">
+                                    {repo.name}
+                                 </a>
+                              </h4>
+                              <p>{repo.description}</p>
+                           </div>
+                           <div className="col-md-6">
+                              <span className="badge badge-info mr-1">
+                                 Stars: {repo.stargazers_count}
+                              </span>
+                              <span className="badge badge-info mr-1">
+                                 Watchers: {repo.watchers_count}
+                              </span>
+                              <span className="badge badge-info mr-1">
+                                 Forks: {repo.forks_count}
+                              </span>
+                           </div>
+                        </div>
+                     </div>
+                  ))
+               }
+            </div>
+         );
+
+      } else if (username === undefined) {
+         return <div>
+            <h3 className="text-left text-info">
+               <i className="fab fa-github fa-1x"></i>
+               Aún no ha creado un usuario de GitHub...
+                  </h3>
          </div>
-      );
+      }
+
    }
 }
 
 ProfileGithub.propTypes = {
-   username: PropTypes.string.isRequired
+   username: PropTypes.string
 };
 
 export default ProfileGithub;

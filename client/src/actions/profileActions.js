@@ -38,6 +38,9 @@ export const getProfileByHandle = (handle) => dispatch => {
       );
 };
 
+//get github data by username////////////***/// */
+//export const getGithub = ()
+
 //get all profiles
 export const getProfiles = () => dispatch => {
    dispatch(setProfileLoading());
