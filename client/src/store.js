@@ -1,4 +1,5 @@
-/* import { createStore, applyMiddleware, compose } from 'redux';
+//STORE FOR PROD
+import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers';
 
@@ -15,10 +16,12 @@ const store = createStore(
    composedMiddlewares
 );
 
-export default store; */
+export default store;
 
 
-import { createStore, applyMiddleware, compose } from 'redux';
+
+//STORE FOR DEV
+/* import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import rootReducer from './reducers';
 
@@ -35,5 +38,5 @@ const store = createStore(
    )
 );
 
-export default store;
+export default store; */
 
